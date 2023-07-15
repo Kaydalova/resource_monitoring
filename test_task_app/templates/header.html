@@ -1,0 +1,39 @@
+<header class="pt-3">
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <div class="container">
+      <a class="navbar-brand" href="{{ url_for('create_source_view') }}">
+          <img src="{{ url_for('static', filename='img/back.png') }}" height="50" class="" alt="" />
+      </a>
+        <div class="d-flex justify-content-end">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('create_source_view') }}">
+                Добавить ресурс
+              </a>
+            </li>
+              <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('get_sources_view') }}">
+                Все ресурсы
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('get_sources_view') }}">
+                Логи
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('get_sources_view') }}">
+                Лента новостей
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('get_sources_view') }}">
+                Страница ресурса
+              </a>
+            </li>
+           
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>

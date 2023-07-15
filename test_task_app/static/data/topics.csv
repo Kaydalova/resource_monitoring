@@ -1,0 +1,9 @@
+﻿name,slug
+Core Python,core
+Базы данных,db
+Git,git
+Ethernet,ethernet
+Django,django
+Flask,flask
+FastAPI,fastapi
+CI/CD,cicd

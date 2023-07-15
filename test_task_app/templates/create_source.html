@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %} Предложить свой вопрос {% endblock %}
+{% block content %}
+<main>
+  <section class="container my-5">
+    <div class="row">
+      <h1>Добавить новые ресурсы</h1>
+      <div class="col-12 col-lg-7 my-5">
+      <label for="formFile" class="form-label">Выберите файл для добавления нескольких ресурсов</label>
+      <form action = "{{url_for('create_source_view')}}" method = "post" enctype="multipart/form-data"> 
+      <input type="file" name="file" class="form-control">
+      <br>
+      <input type = "submit" value="Загрузить файл" class="btn btn-primary"> 
+      </form>
+      <br>
+      
+      <form action = " " method = "post">
+        <label class="form-label">Вставьте URL для добавления ресурса в список отслеживания</label>
+        <input type="text" name="url" class="form-control">
+         <br>
+        <input type = "submit" value="Добавить ресурс" class="btn btn-primary"> 
+      </form>
+    
+
+
+        <p class="py-3 mb-3">
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              {% for message in messages %}
+              <span style="color: red">{{ message }}</span>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+        </p>
+      </div>
+      <div class="col-12 col-lg-5">
+        <img
+          class="img-fluid mx-auto d-block"
+          src="{{ url_for('static', filename='img/female_programmer.png') }}"
+          alt=""
+        />
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
