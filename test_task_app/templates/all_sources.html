@@ -12,16 +12,16 @@
     <!-- Форма для фильтрации -->
     <form action="/" method="get" class="row g-3">
       <div class="col-auto">
-      <input type="text" name="domain_name" placeholder="Доменное имя" class="form-control">
+      <input type="text" name="domain" placeholder="Доменное имя" class="form-control">
     </div>
     <div class="col-auto">
       <input type="text" name="domain_zone" placeholder="Доменная зона" class="form-control">
     </div>
     <div class="col-auto">
-      <select name="status" class="form-select">
+      <select name="is_awailable" class="form-select">
           <option value="">Статус доступности</option>
-          <option value="available">Доступен</option>
-          <option value="unavailable">Недоступен</option>
+          <option value="True">Доступен</option>
+          <option value="False">Недоступен</option>
       </select>
     </div>
       <br>
@@ -34,16 +34,16 @@
   <br>
 
     <!-- Таблица с данными -->
-    <div class="col-12 col-lg-7 my-5">
-    <table class="table table-hover">
-      <thead class="table-dark">
+    <div class="col-12 my-5" >
+    <table class="table">
+      <thead>
           <tr>
-              <th>ID</th>
-              <th>Доменное имя</th>
-              <th>Доменная зона</th>
-              <th>Полная ссылка</th>
-              <th>Статус доступности</th>
-              <th>Удалить</th>
+              <th scope="col">ID</th>
+              <th scope="col">Доменное имя</th>
+              <th scope="col">Доменная зона</th>
+              <th class="w-10" scope="col">Полная ссылка</th>
+              <th scope="col">Статус доступности</th>
+              <th scope="col">Удалить</th>
           </tr>
       </thead>
       <tbody>
@@ -52,7 +52,13 @@
               <td>{{ source.id }}</td>
               <td>{{ source.domain }}</td>
               <td>{{ source.domain_zone }}</td>
-              <td>{{ source.full_link }}</td>
+
+
+
+              <td class="w-8" style="width: 40%; word-wrap:break-all;"><a href="{{ url_for('source_view', source_id=source.id)}}">{{ source.full_link }}</a></td>
+
+
+
               <td>{{ source.status_code }}</td>
               <td><a href="{{ url_for('delete_source_view', source_id=source.id) }}"
                 class="btn btn-outline-danger">Удалить</a></td>

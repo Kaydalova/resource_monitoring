@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %} Отслеживание ресурсов {% endblock %}
+{% block content %}
+<main>
+  <section class="container my-5">
+    <div class="row">
+      <h1>Страница ресурса</h1>
+      <div class="col-12 col-lg-7 my-5">
+        {% if screenshot %}
+        <img class="img-fluid mx-auto d-block"
+        src="{{screenshot}}"
+        alt="Изображение">
+        {% endif %}
+
+        {% if news %}
+        <ul>
+          {% for elem in news %}
+          <p></p>{{ elem }} </p>
+          {% endfor %}
+          </ul>
+          {% else %}
+          <p>Кажется нет ни одной новости!!</p>
+  
+          {% endif %}
+      </div>
+      <div class="col-12 col-lg-5">
+        <img
+          class="img-fluid mx-auto d-block"
+          src="{{ url_for('static', filename='img/male_sourcer.png') }}"
+          alt=""
+        />
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

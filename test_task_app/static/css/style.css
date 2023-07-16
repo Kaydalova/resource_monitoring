@@ -16,15 +16,15 @@ p, a {
 }
 
 a.nav-link, a {
-    color: #3f3470;
+    color: #0000ff;
 
 }
 
 a.nav-link:hover, a:hover {
-    color: #9881fc;
+    color: #000000;
 }
 .nav-pills a.nav-link.active {
-    background-color: #3f3470;
+    background-color: #0000ff;
     border-radius: 20px;
 }
 

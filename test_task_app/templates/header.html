@@ -2,7 +2,7 @@
     <nav class="navbar navbar-expand-lg navbar-light">
       <div class="container">
       <a class="navbar-brand" href="{{ url_for('create_source_view') }}">
-          <img src="{{ url_for('static', filename='img/back.png') }}" height="50" class="" alt="" />
+          <img src="{{ url_for('static', filename='img/timer.png') }}" height="50" class="" alt="" />
       </a>
         <div class="d-flex justify-content-end">
           <ul class="nav nav-pills">
@@ -17,21 +17,15 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('get_sources_view') }}">
-                Логи
+              <a class="nav-link" href="{{ url_for('get_logs_view') }}">
+                Журнал
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('get_sources_view') }}">
+              <a class="nav-link" href="{{ url_for('news_view') }}">
                 Лента новостей
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('get_sources_view') }}">
-                Страница ресурса
-              </a>
-            </li>
-           
           </ul>
         </div>
       </div>

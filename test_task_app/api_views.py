@@ -5,16 +5,17 @@ from multiprocessing import Process
 from flask import jsonify, request
 
 from . import app, db
+from .async_services import start_async
 from .constants import (INVALID_FILE_EXTENTION, INVALID_URL, INVALID_UUID,
                         NEW_SOURCE_CREATED, SCREENSHOT_REQUIRED,
-                        SCREENSHOT_SAVED, UNABLE_TO_GET_LOGS, URL_REQUIRED,
-                        UUID_NOT_FOUND, UUID_PATTERN, UUID_REQUIRED, ZIP_EMPTY,
-                        ZIP_REQUIRED, STARTED_SAVING_PROCESS)
-from .logging_config import all_actions_logger
+                        SCREENSHOT_SAVED, STARTED_SAVING_PROCESS,
+                        UNABLE_TO_GET_LOGS, URL_REQUIRED, UUID_NOT_FOUND,
+                        UUID_PATTERN, UUID_REQUIRED, ZIP_EMPTY, ZIP_REQUIRED)
+from .logging_config import all_actions_logger, status_check_logger
 from .models import Source
-from .services import (add_resources_from_list, check_file_extension,
-                       check_source_with_pattern, check_urls_in_csv,
-                       create_new_source, unzip_the_zip_and_save)
+from .services import (check_file_extension, check_source_with_pattern,
+                       check_urls_in_csv, create_new_source,
+                       unzip_the_zip_and_save)
 
 
 @app.route('/api/add_source', methods=['POST'])
@@ -88,10 +89,11 @@ def add_zip_sources_api_view():
     error_urls = all_urls - len(urls_for_saving)
 
     # Сохранение корректных ссылок из CSV файла в другом процессе
-    saving_urls_process = Process(
-        target=add_resources_from_list, args=(urls_for_saving,))
-    saving_urls_process.start()
     all_actions_logger.info(STARTED_SAVING_PROCESS)
+    saving_urls_process = Process(
+        target=start_async, args=(urls_for_saving,))
+    saving_urls_process.start()
+
     return jsonify({
         'all_urls': all_urls,
         'error_urls': error_urls,
@@ -133,6 +135,7 @@ def add_screenshot_api_view():
     db.session.add(db_source)
     db.session.commit()
     all_actions_logger.info(SCREENSHOT_SAVED)
+    status_check_logger.info(f'Добавлен скриншот для ресурса {source_id}')
     return jsonify({'success': SCREENSHOT_SAVED}), 200
 
 
