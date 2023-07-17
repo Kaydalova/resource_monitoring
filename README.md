@@ -125,7 +125,7 @@ http://127.0.0.1:5000/api/all_sources?page=1&per_page=3&is_awailable=True&domain
 - Страница 3 (http://127.0.0.1:5000/logs) отображает строки из лог-файла.
 По клику на кнопку "скачать журнал" скачивается файл с отображаемыми строчками лога в формате pdf. 
 
-- Страница 4(http://127.0.0.1:5000/news) Лента новостей. На эту страницу выводится информация об изменениях:
+- Страница 4 (http://127.0.0.1:5000/news) Лента новостей. На эту страницу выводится информация об изменениях:
 изменился код ответа сайта, ресурс был добавлен в базу, ресурс был удален из базы и т.д.
 
 - Страница ресурса. Выводятся все данные по ресурсу из БД, картинка (если есть), лента с новостями по ресурсу.
@@ -134,7 +134,7 @@ http://127.0.0.1:5000/api/all_sources?page=1&per_page=3&is_awailable=True&domain
 
 
 ### Как запустить проект:
-Клонировать репозиторий и перейти в него в командной строке:
+1. Клонировать репозиторий и перейти в него в командной строке:
 
 ```
 git clone git@github.com:Kaydalova/test_task.git
@@ -144,35 +144,41 @@ git clone git@github.com:Kaydalova/test_task.git
 cd test_task_app
 ```
 
-Cоздать и активировать виртуальное окружение:
-
+2. Запустить контейнеры с проектом и базой:
 ```
-python3 -m venv venv
-```
-
-```
-source venv/bin/activate
+sudo docker-compose build
+sudo docker-compose up
 ```
 
-Установить зависимости из файла requirements.txt:
+3. После этого нужно открыть соседний терминал, зайти в контейнер с проектом и выполнить миграции:
+```
+sudo docker exec -it test_task_app_1 bash
+flask db init
+flask db migrate
+flask db upgrade
+```
+4. После выполнения миграций сайт будет доступен по адресу http://127.0.0.1:5000
 
-```
-python3 -m pip install --upgrade pip
-```
+5. Чтобы запустить мониторинг нужно перейти по адресу http://127.0.0.1:5000/start_monitoring
 
-```
-pip install -r requirements.txt
-```
 
-Создадим и наполним базу данных:
-
+!!! Если при запуске возникла ошибка:
 ```
-flask create_db
-flask load_questions
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "172.19.0.3", port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
 ```
-Запустим проект:
+Нужно проверить на каком хосте висит бд:
 ```
-flask run
+sudo docker inspect test_task_db_1  | grep IPAddress
 ```
-После запуска сервис будет доступен по адресу:
- http://127.0.0.1:5000
+Ответ будет примерно таким:
+```
+  "SecondaryIPAddresses": null,
+            "IPAddress": "",
+                    "IPAddress": "172.19.0.2",
+```
+Тогда нужно актуальный хост перенести в файл config.yaml:
+```
+host: 172.19.0.2
+```
+и вернуться к шагу 2.
