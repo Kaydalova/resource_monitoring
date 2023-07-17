@@ -1,5 +1,5 @@
 <div align="center">
- <img src="test_task_app/static/img/male500.png" alt="Logo">   
+ <img src="test_task_app/static/img/male_sourcer.png" alt="Logo"> 
 <h3 >Мониторинг доступности ресурсов</h3>
 Приложение помогает каталогизировать и структурировать информацию по различным веб-ресурсам, а также производить мониторинг их доступности.
 </div>
