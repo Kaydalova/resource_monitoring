@@ -10,6 +10,7 @@ from .constants import (COMPLETED_SAVING_PROCESS, INVALID_FILE_EXTENTION,
                         STARTED_SAVING_PROCESS, ZIP_EMPTY, ZIP_REQUIRED)
 from .logging_config import all_actions_logger, status_check_logger
 from .models import Source
+from .monitoring import start_async_monitoring
 from .services import (check_file_extension, check_source_with_pattern,
                        check_urls_in_csv, create_new_source,
                        unzip_the_zip_and_save)
@@ -207,3 +208,18 @@ def source_view(source_id):
         news=source_news,
         source=source,
         screenshot=file_new)
+
+
+@app.route('/start_monitoring', methods=['GET'])
+def start_monitoring():
+    """
+    Функция запускает мониторинг доступности сохраненных ресурсов.
+    """
+    all_actions_logger.info('Начало мониторинга с периодичностью ')
+    monitoring_process = Process(
+        target=start_async_monitoring)
+    monitoring_process.start()
+    # start_async_monitoring()
+    all_actions_logger.info('Запуск процесса мониторинга')
+    flash('Процесс мониторинга доступности запущен')
+    return redirect(url_for('get_sources_view'))

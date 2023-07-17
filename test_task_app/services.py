@@ -28,7 +28,7 @@ def unzip_the_zip_and_save(zip_file):
 
     with ZipFile(f'uploads/{zip_file.filename}', 'r') as file:
         file.extractall(f'uploads/{filename}')
-    
+
     content = os.listdir(f'uploads/{filename}')
     return content
 

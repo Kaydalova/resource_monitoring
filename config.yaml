@@ -1,0 +1,13 @@
+database:
+  #host: localhost
+  host: 172.19.0.3
+  port: 5432
+  username: alexandra
+  password: alex55
+  dbname: flask_db
+
+
+monitoring:
+  check_period: 60
+  keep_unavailable: 24
+  

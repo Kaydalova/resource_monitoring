@@ -1,16 +1,17 @@
 import asyncio
-from datetime import datetime
 
 import aiohttp
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+
+from settings import host, name, password, port, username
 
 from .constants import NEW_SOURCE_SAVED, SOURCE_TIMEOUT
 from .logging_config import status_check_logger
 from .models import Source
 
 engine = create_async_engine(
-    'postgresql+asyncpg://alexandra:alex55@localhost:5432/flask_db')
+    f'postgresql+asyncpg://{username}:{password}@{host}:{port}/{name}')
 
 AsyncSessionLocal = sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False)
@@ -52,7 +53,8 @@ async def create_new_source(source: tuple):
         session.add(new_source)
         await session.commit()
         await session.refresh(new_source)
-        status_check_logger.info(NEW_SOURCE_SAVED.format(domain, new_source.id))
+        status_check_logger.info(
+            NEW_SOURCE_SAVED.format(domain, new_source.id))
 
 
 async def create_from_dict(urls_for_saving: dict):
@@ -63,8 +65,4 @@ async def create_from_dict(urls_for_saving: dict):
 
 
 def start_async(urls_for_saving: dict):
-    print('Асинхронное выполнение кода:')
-    start_time = datetime.now()
     asyncio.run(create_from_dict(urls_for_saving))
-    end_time = datetime.now()
-    print(f'Итоговое время выполнения: {end_time - start_time} секунд.')

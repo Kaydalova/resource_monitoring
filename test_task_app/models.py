@@ -17,6 +17,7 @@ class Source(db.Model):
     params = db.Column(JSON)
     full_link = db.Column(db.String)
     status_code = db.Column(db.String)
+    status_check_error = db.Column(db.Integer, default=0)
     is_awailable = db.Column(db.Boolean)
     screenshot = db.Column(db.LargeBinary)
 

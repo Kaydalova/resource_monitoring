@@ -7,6 +7,15 @@
 
     <h1>Все ресурсы </h1>
     <br>
+    <p class="py-3 mb-3">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+          <span style="color: red">{{ message }}</span>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </p>
     <br>
 
     <!-- Форма для фильтрации -->
