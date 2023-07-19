@@ -4,8 +4,14 @@
 <main>
   <section class="container my-5">
     <div class="row">
-      <h1>Страница ресурса</h1>
+      <h1>Страница ресурса </h1>
       <div class="col-12 col-lg-7 my-5">
+        <p>ID: {{source.id}}</p>
+        <p>Домен: {{source.domain}}</p>
+        <p>Доменная зона: {{source.domain_zone}}</p>
+        <p>URL: {{source.full_link}}</p>
+        <p>Статус доступности: {{source.status_code}}</p>
+        <br>
         {% if screenshot %}
         <img class="img-fluid mx-auto d-block"
         src="{{screenshot}}"

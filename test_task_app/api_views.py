@@ -42,8 +42,8 @@ def add_source_api_view():
     if not pattern_match:
         all_actions_logger.info(INVALID_URL)
         return jsonify({'error': INVALID_URL}), 400
-    
-    if not Source.query.filter(Source.full_link==data['url']).first():
+
+    if not Source.query.filter(Source.full_link == data['url']).first():
         new_source = create_new_source(pattern_match, data['url'])
         all_actions_logger.info(NEW_SOURCE_CREATED)
         return jsonify({
@@ -51,7 +51,6 @@ def add_source_api_view():
             'status': NEW_SOURCE_CREATED}), 201
     return jsonify({
         'error': 'Такой адрес уже есть в базе.'}), 400
-    
 
 
 @app.route('/api/add_sources_zip', methods=['POST'])

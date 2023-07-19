@@ -5,6 +5,41 @@
   <section class="container my-5">
     <div class="row">
       <h1>Лента новостей</h1>
+
+    <!-- Flash сообщения -->
+      <br>
+      <p class="py-3 mb-3">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+            <span style="color: red">{{ message }}</span>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </p>
+      <br>
+
+    <!-- Форма для фильтрации и очистка фильтра -->
+    <form action="/news" method="get" class="row g-3">
+      <div class="col-4">
+        <input type="text" name="date_from" placeholder="Начало периода в формате yyyy-mm-dd HH:mm" class="form-control">
+      </div>
+
+      <div class="col-4">
+        <input type="text" name="date_to" placeholder="Конец периода в формате yyyy-mm-dd HH:mm" class="form-control">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Применить фильтр</button>
+      </div>
+
+      <div class="col-auto">
+        <button class="btn btn-primary" name="clear" value="True">Очистить фильтр</button>
+      </div>
+    </form>
+    <br>
+
+    <!-- Основной контент -->
+
       <div class="col-12 col-lg-7 my-5">
         {% if news %}
         <ul>
@@ -17,6 +52,7 @@
   
           {% endif %}
       </div>
+
       <div class="col-12 col-lg-5">
         <img
           class="img-fluid mx-auto d-block"
@@ -24,6 +60,44 @@
           alt=""
         />
       </div>
+    </div>
+
+
+    <!-- Пагинация -->
+    <div>
+      {% if current_page > 3 %}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('news_view', page=1) }}">{{ 1 }}</a>...
+      {% endif %}
+
+      {% if current_page > 1 and total > current_page+2 %}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('news_view', page=current_page-1) }}">{{ current_page-1 }}</a>
+      {% endif %}
+      {% if total > current_page+2 %}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('news_view', page=current_page) }}">{{ current_page }}</a>
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('news_view', page=current_page+1) }}">{{ current_page+1 }}</a>
+      ...
+      {% endif %}
+      
+      
+      {% if current_page+2 == total%}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('news_view', page=current_page) }}">{{ current_page }}</a>
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('news_view', page=total-1) }}">{{ total-1 }}</a>
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('news_view', page=total) }}">{{ total }}</a>
+      
+    {% else %}
+    <a class="btn btn-primary mb-4"
+    href="{{ url_for('news_view', page=total-1) }}">{{ total-1 }}</a>
+
+    <a class="btn btn-primary mb-4"
+      href="{{ url_for('news_view', page=total) }}">{{ total }}</a>
+    {% endif %} 
     </div>
   </section>
 </main>

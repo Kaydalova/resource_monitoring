@@ -1,3 +1,5 @@
+import math
+import re
 from multiprocessing import Process
 
 from flask import flash, redirect, render_template, request, send_file, url_for
@@ -5,8 +7,12 @@ from fpdf import FPDF
 
 from . import app, db
 from .async_services import start_async
-from .constants import (COMPLETED_SAVING_PROCESS, INVALID_FILE_EXTENTION,
-                        INVALID_URL, NEW_SOURCE_CREATED, SOURCE_DELETED,
+from .constants import (COMPLETED_SAVING_PROCESS, DATE_CLEARED,
+                        DATE_FROM_REQUIRED, DATE_TO_REQUIRED, DATETIME_PATTERN,
+                        DOWNLOAD_LOGS_PDF, INVALID_DATE_FORMAT,
+                        INVALID_FILE_EXTENTION, INVALID_URL,
+                        NEW_SOURCE_CREATED, SHOW_ALL_SOURCES, SHOW_LOGS,
+                        SHOW_NEWS, SHOW_SOURCE_PAGE, SOURCE_DELETED,
                         STARTED_SAVING_PROCESS, ZIP_EMPTY, ZIP_REQUIRED)
 from .logging_config import all_actions_logger, status_check_logger
 from .models import Source
@@ -83,7 +89,7 @@ def get_sources_view():
     из таблицы и базы данных соответственно.
     """
     clear = request.args.get('clear', '')
-    all_actions_logger.info('новый запрос на просмотр всех ресурсов')
+    all_actions_logger.info(SHOW_ALL_SOURCES)
     domain = request.args.get('domain', '')
     domain_zone = request.args.get('domain_zone', '')
     is_awailable = request.args.get('is_awailable', '')
@@ -92,7 +98,6 @@ def get_sources_view():
     if clear:
         sources = Source.query.paginate(page=1, per_page=10)
         return render_template('all_sources.html', sources=sources)
-
 
     query = Source.query
 
@@ -130,7 +135,7 @@ def get_logs_view():
     По клику на кнопку "скачать логи" скачивается файл
     с отображаемыми строчками лога в формате pdf.
     """
-    all_actions_logger.info('Новый запрос на просмотр журнала логов.')
+    all_actions_logger.info(SHOW_LOGS)
     log_file = 'logs/all_actions.log'
     with open(log_file, 'r') as file:
         logs = file.read()
@@ -141,17 +146,12 @@ def get_logs_view():
 
 @app.route('/download_logs')
 def download_logs():
-    all_actions_logger.info('Загрузка PDF файла с журналом логов.')
-    import os
-    all_actions_logger.info(f'Ты находишься здесь {os.getcwd()}')
+    all_actions_logger.info(DOWNLOAD_LOGS_PDF)
     log_file = 'logs/all_actions.log'
     pdf = FPDF()
     pdf.add_page()
-
     pdf.add_font('DejaVu', '', 'font/DejaVuSerifCondensed.ttf', uni=True)
-    
     pdf.set_font('DejaVu', size=10)
-
     pdf.cell(200, 10, txt='Журнал добавления ресурсов', ln=1, align='C')
 
     with open(log_file, 'r') as file:
@@ -168,18 +168,80 @@ def download_logs():
 def news_view():
     """
     Функция для отображения ленты новостей.
-    На эту страницу динамически выводится информация об изменениях:
+    На эту страницу выводится информация об изменениях:
     - изменился код ответа сайта
     - ресурс был добавлен в базу
     - ресурс был удален из базы
     """
-    all_actions_logger.info('Новый запрос на просмотр ленты новостей.')
-    log_file = 'logs/status_check.log'
-    with open(log_file, 'r') as file:
-        news = file.read()
-        news = news.split('\n')[::-1]
+    date_from = request.args.get('date_from')
+    date_to = request.args.get('date_to')
+    clear = request.args.get('clear')
+    page = request.args.get('page', 1, type=int)
+    all_actions_logger.info(SHOW_NEWS)
 
-    return render_template('news.html', news=news)
+    log_file = 'logs/status_check.log'
+    per_page = 10
+
+    with open(log_file, 'r') as file:
+        news = file.readlines()
+
+    page_start = (page-1) * per_page
+    page_end = page_start + per_page
+    news_with_pagination = news[page_start:page_end]
+    total = math.ceil(len(news)/per_page)
+
+    if clear:
+        flash(DATE_CLEARED)
+        return render_template(
+            'news.html',
+            news=news_with_pagination,
+            current_page=page, total=total)
+
+    datetime_pattern = re.compile(DATETIME_PATTERN)
+
+    # Проверяем, что обе даты указаны
+    if date_from and not date_to:
+        flash(DATE_TO_REQUIRED)
+        return render_template(
+            'news.html',
+            news=news_with_pagination,
+            current_page=page, total=total)
+    if date_to and not date_from:
+        flash(DATE_FROM_REQUIRED)
+        return render_template(
+            'news.html',
+            news=news_with_pagination,
+            current_page=page, total=total)
+
+    # Проверяем, что дата указана в корректном формате
+    if date_from and date_to:
+        if (not datetime_pattern.match(
+                date_to) or not datetime_pattern.match(date_from)):
+            flash(INVALID_DATE_FORMAT)
+            return render_template(
+                'news.html',
+                news=news_with_pagination,
+                current_page=page, total=total)
+
+        date_news = []
+        for element in news:
+            if date_from <= element.split(']')[0][1:20] <= date_to:
+                date_news.append(element)
+
+        page_start = (page-1) * per_page
+        page_end = page_start + per_page
+        news_with_pagination = date_news[page_start:page_end]
+        total = math.ceil(len(date_news)/per_page)
+
+        return render_template(
+            'news.html',
+            news=news_with_pagination,
+            current_page=page,
+            total=total)
+    return render_template(
+        'news.html',
+        news=news_with_pagination,
+        current_page=page, total=total)
 
 
 @app.route('/source/<string:source_id>', methods=['GET'])
@@ -189,7 +251,7 @@ def source_view(source_id):
     Выводятся все данные по ресурсу из БД, картинка (если есть),
     лента с новостями по ресурсу.
     """
-    all_actions_logger.info(f'Запрос на просмотр страницы ресурса {source_id}')
+    all_actions_logger.info(SHOW_SOURCE_PAGE.format(source_id))
     source = Source.query.get_or_404(source_id)
     screenshot = source.screenshot
 
@@ -224,11 +286,9 @@ def start_monitoring():
     """
     Функция запускает мониторинг доступности сохраненных ресурсов.
     """
-    all_actions_logger.info('Начало мониторинга с периодичностью ')
     monitoring_process = Process(
         target=start_async_monitoring)
     monitoring_process.start()
-    # start_async_monitoring()
     all_actions_logger.info('Запуск процесса мониторинга')
     flash('Процесс мониторинга доступности запущен')
     return redirect(url_for('get_sources_view'))
