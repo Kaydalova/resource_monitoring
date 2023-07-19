@@ -18,7 +18,7 @@
     </p>
     <br>
 
-    <!-- Форма для фильтрации -->
+    <!-- Форма для фильтрации и очистка фильтра -->
     <form action="/" method="get" class="row g-3">
       <div class="col-auto">
       <input type="text" name="domain" placeholder="Доменное имя" class="form-control">
@@ -37,6 +37,11 @@
       <br>
       <div class="col-auto">
       <button type="submit" class="btn btn-primary">Применить фильтр</button>
+    </div>
+    <div class="col-auto">
+      <form action="{{ url_for('get_sources_view') }}" method="post">
+        <button class="btn btn-primary" name="clear" value="True">Очистить фильтр</button>
+      </form>
     </div>
   </form>
   <br>
@@ -63,11 +68,7 @@
               <td>{{ source.domain_zone }}</td>
 
 
-
-              <td class="w-8" style="width: 40%; word-wrap:break-all;"><a href="{{ url_for('source_view', source_id=source.id)}}">{{ source.full_link }}</a></td>
-
-
-
+              <td class="w-8" style="width: 40%; word-break:break-all;"><a href="{{ url_for('source_view', source_id=source.id)}}">{{ source.full_link }}</a></td>
               <td>{{ source.status_code }}</td>
               <td><a href="{{ url_for('delete_source_view', source_id=source.id) }}"
                 class="btn btn-outline-danger">Удалить</a></td>

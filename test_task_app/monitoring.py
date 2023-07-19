@@ -37,7 +37,7 @@ async def check_source_status(source):
 
         async_session = AsyncSessionLocal()
         async with async_session as session:
-            if status_code > keep_unavailable:
+            if source.status_check_error > keep_unavailable:
                 session.delete(source)
                 await session.commit()
                 status_check_logger.info(
@@ -70,7 +70,7 @@ async def create_tasks():
 async def schedule_monitoring():
     while True:
         await create_tasks()
-        await asyncio.sleep(check_period)  # Пауза в 1 час
+        await asyncio.sleep(10)  # Пауза в 1 час
 
 
 def start_async_monitoring():

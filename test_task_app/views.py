@@ -82,11 +82,17 @@ def get_sources_view():
     а также удаление конкретного элемента
     из таблицы и базы данных соответственно.
     """
+    clear = request.args.get('clear', '')
     all_actions_logger.info('новый запрос на просмотр всех ресурсов')
     domain = request.args.get('domain', '')
     domain_zone = request.args.get('domain_zone', '')
     is_awailable = request.args.get('is_awailable', '')
     page = request.args.get('page', 1, type=int)
+
+    if clear:
+        sources = Source.query.paginate(page=1, per_page=10)
+        return render_template('all_sources.html', sources=sources)
+
 
     query = Source.query
 
@@ -136,11 +142,14 @@ def get_logs_view():
 @app.route('/download_logs')
 def download_logs():
     all_actions_logger.info('Загрузка PDF файла с журналом логов.')
+    import os
+    all_actions_logger.info(f'Ты находишься здесь {os.getcwd()}')
     log_file = 'logs/all_actions.log'
     pdf = FPDF()
     pdf.add_page()
 
-    pdf.add_font('DejaVu', '', 'font/DejaVuSansCondensed.ttf', uni=True)
+    pdf.add_font('DejaVu', '', 'font/DejaVuSerifCondensed.ttf', uni=True)
+    
     pdf.set_font('DejaVu', size=10)
 
     pdf.cell(200, 10, txt='Журнал добавления ресурсов', ln=1, align='C')
@@ -151,8 +160,8 @@ def download_logs():
         for elem in logs:
             pdf.cell(200, 10, txt=elem, ln=1, align='L')
 
-    pdf.output('test_task_app/downloads/logs.pdf')
-    return send_file('downloads/logs.pdf', as_attachment=True)
+    pdf.output('test_task_app/logs.pdf')
+    return send_file('logs.pdf', as_attachment=True)
 
 
 @app.route('/news', methods=['GET'])
