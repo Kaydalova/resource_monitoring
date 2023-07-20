@@ -4,14 +4,14 @@ import aiohttp
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-from settings import host, name, password, port, username
+from settings import name, password, port, username
 
 from .constants import NEW_SOURCE_SAVED, SOURCE_TIMEOUT
 from .logging_config import status_check_logger
 from .models import Source
 
 engine = create_async_engine(
-    f'postgresql+asyncpg://{username}:{password}@{host}:{port}/{name}')
+    f'postgresql+asyncpg://{username}:{password}@db:{port}/{name}')
 
 AsyncSessionLocal = sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False)

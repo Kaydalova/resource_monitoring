@@ -16,6 +16,7 @@ from .models import Source
 from .services import (check_file_extension, check_source_with_pattern,
                        check_urls_in_csv, create_new_source,
                        unzip_the_zip_and_save)
+from settings import logs_limit_config
 
 
 @app.route('/api/add_source', methods=['POST'])
@@ -196,7 +197,7 @@ def get_logs_api_view():
     Количество строчек может быть изменено в параметрах запроса.
     """
     all_actions_logger.info('Новый запрос к /api/logs')
-    logs_limit = int(request.args.get('logs_limit', 50))
+    logs_limit = int(request.args.get('logs_limit', logs_limit_config))
     try:
         output = subprocess.check_output(
             ['tail', '-n', str(

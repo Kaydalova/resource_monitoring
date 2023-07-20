@@ -153,6 +153,7 @@ sudo docker-compose up
 3. После этого нужно открыть соседний терминал, зайти в контейнер с проектом и выполнить миграции:
 ```
 sudo docker exec -it test_task_app_1 bash
+export FLASK_APP=test_task_app
 flask db init
 flask db migrate
 flask db upgrade
@@ -162,34 +163,15 @@ flask db upgrade
 5. Чтобы запустить мониторинг нужно перейти по адресу http://127.0.0.1:5000/start_monitoring
 
 
-!!! Если при запуске возникла ошибка:
-```
-sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server at "172.19.0.3", port 5432 failed: Connection refused
-	Is the server running on that host and accepting TCP/IP connections?
-```
-Нужно проверить на каком хосте висит бд:
-```
-sudo docker inspect test_task_db_1  | grep IPAddress
-```
-Ответ будет примерно таким:
-```
-  "SecondaryIPAddresses": null,
-            "IPAddress": "",
-                    "IPAddress": "172.19.0.2",
-```
-Тогда нужно актуальный хост перенести в файл config.yaml:
-```
-host: 172.19.0.2
-```
-и вернуться к шагу 2.
 
 TODO:
 Страница ресурса добавить полное описание heavy_check_mark
 Очистка фильтра на странице все ресурсы heavy_check_mark
 Страница логов: фильтр по дате, пагинация heavy_check_mark
-Нормальный запуск в докере
+Журнал: фильтр по дате, пагинация
+Нормальный запуск в докере heavy_check_mark
 Запуск мониторинга перед запуском Flask приложение
-Перенести все конфигурационные данные в yaml
+Перенести все конфигурационные данные в yaml heavy_check_mark
 Авторизация и регистрация с токенами
 Безопасная обработка архива
 Логгирование с буферизацией

@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-from settings import (check_period, host, keep_unavailable, name, password,
+from settings import (check_period, keep_unavailable, name, password,
                       port, username)
 
 from .constants import SOURCE_STATUS_CHANGED, UNAVAILIBLE_SOURCE_DELETED
@@ -13,7 +13,7 @@ from .logging_config import status_check_logger
 from .models import Source
 
 engine = create_async_engine(
-    f'postgresql+asyncpg://{username}:{password}@{host}:{port}/{name}')
+    f'postgresql+asyncpg://{username}:{password}@db:{port}/{name}')
 
 
 AsyncSessionLocal = sessionmaker(

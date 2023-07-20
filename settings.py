@@ -9,11 +9,11 @@ def load_config(config_file_path):
 
 
 config = load_config('config.yaml')
-host = config['database']['host']
 port = config['database']['port']
 username = config['database']['username']
 password = config['database']['password']
 name = config['database']['dbname']
+logs_limit_config = config['api_views']['logs_limit_config']
 
 # проверять каждые N секунд
 check_period = config['monitoring']['check_period']
@@ -22,7 +22,9 @@ keep_unavailable = config['monitoring']['keep_unavailable']
 
 
 class Config(object):
-    SQLALCHEMY_DATABASE_URI = f'postgresql://{username}:{password}@{host}:{port}/{name}'
+    SQLALCHEMY_DATABASE_URI = f'postgresql://{username}:{password}@db:{port}/{name}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = os.getenv('SECRET_KEY')
+    SECRET_KEY = config['SECRET_KEY']
     UPLOAD_FOLDER = 'test_task/uploads'
+    FLASK_APP = config['FLASK_APP']
+    FLASK_DEBUG = config['FLASK_DEBUG']

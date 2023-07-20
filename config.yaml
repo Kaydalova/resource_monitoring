@@ -1,13 +1,22 @@
+FLASK_APP: test_task_app
+FLASK_DEBUG: 1
+SECRET_KEY: ebc765e247ade64fc67d47a178f498e92be0b999a0bcc51f4dc90e18f4634cb1
+
 database:
-  #host: localhost
-  host: 172.19.0.2
   port: 5432
   username: alexandra
   password: alex55
-  dbname: flask_db
+  dbname: db
 
 
 monitoring:
   check_period: 60
   keep_unavailable: 24
+
+api_views:
+  logs_limit_config: 50
+
+
+
+
   

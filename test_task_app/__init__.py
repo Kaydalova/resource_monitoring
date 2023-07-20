@@ -11,7 +11,4 @@ db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
 
-
-#from .models import User, Topic, Question, Statistics # noqa
-
 from . import  api_views, views, logging_config  # noqa

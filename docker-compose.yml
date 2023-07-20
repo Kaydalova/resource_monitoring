@@ -1,28 +1,29 @@
 version: '3.3'
 
 services:
+  db:
+    image: postgres:14.7
+    restart: always
+    environment:
+      POSTGRES_USER: alexandra
+      POSTGRES_PASSWORD: alex55
+      POSTGRES_DB: db
+
+    volumes:
+      - database_value:/var/lib/postgresql/data
+
   app:
     build:
       context: .
+      args:
+        FLASK_APP: test_task_app
+        FLASK_DEBUG: 1
+        SECRET_KEY: ebc765e247ade64fc67d47a178f498e92be0b999a0bcc51f4dc90e18f4634cb1
       dockerfile: Dockerfile
     ports:
       - 5000:5000
     depends_on:
       - db
-    env_file:
-      - .env
-
-  db:
-    image: postgres:14.7
-    restart: always
-    environment:
-      - POSTGRES_USER=alexandra
-      - POSTGRES_PASSWORD=alex55
-      - POSTGRES_DB=flask_db
-      - POSTGRES_PORT=5432
-      - POSTGRES_HOST=127.0.0.1
-    volumes:
-      - database_value:/var/lib/postgresql/data/
 
 volumes:
-  database_value:
+  database_value: {}
