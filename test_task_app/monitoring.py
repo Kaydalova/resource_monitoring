@@ -30,10 +30,10 @@ async def check_source_status(source):
 
         if status_code == 200:
             source.status_check_error = 0
-            source.is_awailable = True
+            source.is_available = True
         else:
             source.status_check_error += 1
-            source.is_awailable = False
+            source.is_available = False
 
         async_session = AsyncSessionLocal()
         async with async_session as session:

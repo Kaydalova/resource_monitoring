@@ -20,6 +20,7 @@ from .monitoring import start_async_monitoring
 from .services import (check_file_extension, check_source_with_pattern,
                        check_urls_in_csv, create_new_source,
                        unzip_the_zip_and_save)
+from settings import news_per_page, logs_per_page
 
 
 @app.route('/add_source', methods=['GET', 'POST'])
@@ -92,7 +93,7 @@ def get_sources_view():
     all_actions_logger.info(SHOW_ALL_SOURCES)
     domain = request.args.get('domain', '')
     domain_zone = request.args.get('domain_zone', '')
-    is_awailable = request.args.get('is_awailable', '')
+    is_available = request.args.get('is_available', '')
     page = request.args.get('page', 1, type=int)
 
     if clear:
@@ -105,8 +106,8 @@ def get_sources_view():
         query = query.filter(Source.domain == domain)
     if domain_zone:
         query = query.filter(Source.domain_zone == domain_zone)
-    if is_awailable:
-        query = query.filter(Source.is_awailable == is_awailable)
+    if is_available:
+        query = query.filter(Source.is_available == is_available)
 
     if page:
         query = query.paginate(page=page, per_page=10)
@@ -137,11 +138,23 @@ def get_logs_view():
     """
     all_actions_logger.info(SHOW_LOGS)
     log_file = 'logs/all_actions.log'
-    with open(log_file, 'r') as file:
-        logs = file.read()
-        logs = logs.split('\n')[::-1]
 
-    return render_template('logs.html', logs=logs)
+    page = request.args.get('page', 1, type=int)
+    
+    
+    with open(log_file, 'r') as file:
+        logs = file.readlines()
+    
+    page_start = (page-1) * logs_per_page
+    page_end = page_start + logs_per_page
+    logs_with_pagination = logs[page_start:page_end]
+    total = math.ceil(len(logs)/logs_per_page)
+
+    return render_template(
+        'logs.html',
+        logs=logs_with_pagination,
+        current_page=page,
+        total=total )
 
 
 @app.route('/download_logs')
@@ -180,7 +193,7 @@ def news_view():
     all_actions_logger.info(SHOW_NEWS)
 
     log_file = 'logs/status_check.log'
-    per_page = 10
+    per_page = news_per_page
 
     with open(log_file, 'r') as file:
         news = file.readlines()

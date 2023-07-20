@@ -5,6 +5,21 @@
   <section class="container my-5">
     <div class="row">
       <h1>Журнал добавления ресурсов</h1>
+
+    <!-- Flash сообщения -->
+    <br>
+    <p class="py-3 mb-3">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+          <span style="color: red">{{ message }}</span>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </p>
+    <br>
+
+    <!-- Основной контент -->
       <div class="col-12 col-lg-7 my-5">
         {% if logs %}
         <ul>
@@ -14,8 +29,9 @@
           </ul>
           {% else %}
           <p>Кажется в журнале пока нет ни одной записи!</p>
-  
           {% endif %}
+          <br>
+          <br>
           <a href="/download_logs"><button class="btn btn-primary">Скачать журнал</button></a>
       </div>
       
@@ -27,6 +43,45 @@
         />
       </div>
     </div>
+    <br>
+
+    <!-- Пагинация -->
+    <div>
+      {% if current_page > 3 %}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=1) }}">{{ 1 }}</a>...
+      {% endif %}
+
+      {% if current_page > 1 and total > current_page+2 %}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=current_page-1) }}">{{ current_page-1 }}</a>
+      {% endif %}
+      {% if total > current_page+2 %}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=current_page) }}">{{ current_page }}</a>
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=current_page+1) }}">{{ current_page+1 }}</a>
+      ...
+      {% endif %}
+      
+      
+      {% if current_page+2 == total%}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=current_page) }}">{{ current_page }}</a>
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=total-1) }}">{{ total-1 }}</a>
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=total) }}">{{ total }}</a>
+      
+    {% else %}
+    <a class="btn btn-primary mb-4"
+    href="{{ url_for('get_logs_view', page=total-1) }}">{{ total-1 }}</a>
+
+    <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=total) }}">{{ total }}</a>
+    {% endif %} 
+    </div>
+
   </section>
 </main>
 {% endblock %}

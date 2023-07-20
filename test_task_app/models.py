@@ -18,7 +18,7 @@ class Source(db.Model):
     full_link = db.Column(db.String)
     status_code = db.Column(db.String)
     status_check_error = db.Column(db.Integer, default=0)
-    is_awailable = db.Column(db.Boolean)
+    is_available = db.Column(db.Boolean)
     screenshot = db.Column(db.LargeBinary)
 
     def to_dict(self):

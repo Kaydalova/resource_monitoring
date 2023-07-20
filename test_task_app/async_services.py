@@ -31,9 +31,9 @@ async def create_new_source(source: tuple):
             status_check_logger.info(SOURCE_TIMEOUT.format(source[0]))
         protocol, domain, zone, path, params = source[-1].groups()
         if status_code == 200:
-            is_awailable = True
+            is_available = True
         else:
-            is_awailable = False
+            is_available = False
         if params:
             params_list = params.split('&')
             params_dict = dict([tuple(a.split('=')) for a in params_list])
@@ -47,7 +47,7 @@ async def create_new_source(source: tuple):
         params=params_dict,
         full_link=source[0],
         status_code=str(status_code),
-        is_awailable=is_awailable)
+        is_available=is_available)
     async_session = AsyncSessionLocal()
     async with async_session as session:
         session.add(new_source)

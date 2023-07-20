@@ -69,7 +69,7 @@
 
 Пример запроса:
 ```
-http://127.0.0.1:5000/api/all_sources?page=1&per_page=3&is_awailable=True&domain_zone=com
+http://127.0.0.1:5000/api/all_sources?page=1&per_page=3&is_available=True&domain_zone=com
 ```
 
 Пример ответа:
@@ -80,21 +80,21 @@ http://127.0.0.1:5000/api/all_sources?page=1&per_page=3&is_awailable=True&domain
             "domain_zone": "com",
             "full_link": "https://habr.com/ru/articles/201386/",
             "id": "6921a8eb-0893-4953-9beb-4ae5b4881693",
-            "is_awailable": true,
+            "is_available": true,
             "status_code": "200"
         },
         {
             "domain_zone": "com",
             "full_link": "https://www.bogotobogo.com/python/python_function_with_generator_send_method_yield_keyword_iterator_next.php",
             "id": "01f2e73d-bcbf-42f5-b8d0-6c31c2913a5d",
-            "is_awailable": true,
+            "is_available": true,
             "status_code": "200"
         },
         {
             "domain_zone": "com",
             "full_link": "https://timeweb.com/ru/community/articles/chto-takoe-cron",
             "id": "42dc854f-6429-4232-a6c1-a31648f8a64a",
-            "is_awailable": true,
+            "is_available": true,
             "status_code": "200"
         }
     ],
@@ -169,10 +169,11 @@ TODO:
 - Страница ресурса добавить полное описание ✔️
 - Очистка фильтра на странице все ресурсы ✔️
 - Страница логов: фильтр по дате, пагинация ✔️
+- Жуонал: пагинация ✔️
 - Нормальный запуск в докере ✔️
 - Запуск мониторинга перед запуском Flask приложение
 - Перенести все конфигурационные данные в yaml ✔️
-- Поменять awailable на available
+- Поменять awailable на available ✔️
 - Авторизация и регистрация с токенами
 - Безопасная обработка архива
 - Логгирование с буферизацией

@@ -74,9 +74,9 @@ def create_new_source(pattern_match, source):
     except Exception:
         status = None
     if status == 200:
-        is_awailable = True
+        is_available = True
     else:
-        is_awailable = False
+        is_available = False
 
     if params:
         params_list = params.split('&')
@@ -91,7 +91,7 @@ def create_new_source(pattern_match, source):
         params=params_dict,
         full_link=source,
         status_code=status,
-        is_awailable=is_awailable)
+        is_available=is_available)
     db.session.add(new_source)
     db.session.commit()
     db.session.refresh(new_source)

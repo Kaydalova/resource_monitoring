@@ -156,7 +156,7 @@ def get_all_sources_api_view():
     per_page = request.args.get('per_page')
     domain_zone = request.args.get('domain_zone')
     id = request.args.get('id')
-    is_awailable = request.args.get('is_awailable')
+    is_available = request.args.get('is_available')
 
     query = Source.query
 
@@ -164,8 +164,8 @@ def get_all_sources_api_view():
         query = query.filter(Source.domain_zone == domain_zone)
     if id:
         query = query.filter(Source.id == id)
-    if is_awailable:
-        query = query.filter(Source.is_awailable == is_awailable)
+    if is_available:
+        query = query.filter(Source.is_available == is_available)
     total = query.count()
     if page and per_page:
         query = query.paginate(page=int(page), per_page=int(per_page))
@@ -178,7 +178,7 @@ def get_all_sources_api_view():
             'domain_zone': source.domain_zone,
             'full_link': source.full_link,
             'status_code': source.status_code,
-            'is_awailable': source.is_awailable
+            'is_available': source.is_available
         })
     all_actions_logger.info('Список всех ресурсов отправлен')
     return jsonify({

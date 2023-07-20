@@ -13,7 +13,11 @@ port = config['database']['port']
 username = config['database']['username']
 password = config['database']['password']
 name = config['database']['dbname']
+
 logs_limit_config = config['api_views']['logs_limit_config']
+
+news_per_page = config['views']['news_per_page']
+logs_per_page= config['views']['logs_per_page']
 
 # проверять каждые N секунд
 check_period = config['monitoring']['check_period']
