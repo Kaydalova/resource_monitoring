@@ -1,7 +1,6 @@
 import uuid
 
 from sqlalchemy.dialects.postgresql import JSON, UUID
-
 from test_task_app import db
 
 

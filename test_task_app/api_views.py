@@ -3,20 +3,21 @@ import subprocess
 from multiprocessing import Process
 
 from flask import jsonify, request
+from settings import logs_limit_config
 
 from . import app, db
 from .async_services import start_async
 from .constants import (INVALID_FILE_EXTENTION, INVALID_URL, INVALID_UUID,
-                        NEW_SOURCE_CREATED, SCREENSHOT_REQUIRED,
-                        SCREENSHOT_SAVED, STARTED_SAVING_PROCESS,
-                        UNABLE_TO_GET_LOGS, URL_REQUIRED, UUID_NOT_FOUND,
-                        UUID_PATTERN, UUID_REQUIRED, ZIP_EMPTY, ZIP_REQUIRED)
+                        NEW_SOURCE_CREATED, NEW_SOURCE_SAVED,
+                        SCREENSHOT_REQUIRED, SCREENSHOT_SAVED,
+                        STARTED_SAVING_PROCESS, UNABLE_TO_GET_LOGS,
+                        URL_REQUIRED, UUID_NOT_FOUND, UUID_PATTERN,
+                        UUID_REQUIRED, ZIP_EMPTY, ZIP_REQUIRED)
 from .logging_config import all_actions_logger, status_check_logger
 from .models import Source
 from .services import (check_file_extension, check_source_with_pattern,
                        check_urls_in_csv, create_new_source,
                        unzip_the_zip_and_save)
-from settings import logs_limit_config
 
 
 @app.route('/api/add_source', methods=['POST'])
@@ -47,9 +48,12 @@ def add_source_api_view():
     if not Source.query.filter(Source.full_link == data['url']).first():
         new_source = create_new_source(pattern_match, data['url'])
         all_actions_logger.info(NEW_SOURCE_CREATED)
+        status_check_logger.info(
+            NEW_SOURCE_SAVED.format(new_source.domain, new_source.id))
         return jsonify({
             'url': new_source.to_dict(),
             'status': NEW_SOURCE_CREATED}), 201
+    all_actions_logger.info(f'Адрес {data["url"]} уже есть в базе')
     return jsonify({
         'error': 'Такой адрес уже есть в базе.'}), 400
 

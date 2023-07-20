@@ -1,12 +1,11 @@
 import asyncio
 
 import aiohttp
+from settings import (check_period, keep_unavailable, name, password, port,
+                      username)
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-
-from settings import (check_period, keep_unavailable, name, password,
-                      port, username)
 
 from .constants import SOURCE_STATUS_CHANGED, UNAVAILIBLE_SOURCE_DELETED
 from .logging_config import status_check_logger
@@ -23,25 +22,26 @@ AsyncSessionLocal = sessionmaker(
 async def check_source_status(source):
     async with aiohttp.ClientSession() as session:
         try:
-            response = await session.get(source.full_link, timeout=2)
+            response = await session.get(source.full_link, timeout=3)
             status_code = response.status
         except asyncio.exceptions.TimeoutError:
+            status_check_logger.info(f'Таймаут для ресурса {source.id}.')
             status_code = 0
 
         if status_code == 200:
             source.status_check_error = 0
             source.is_available = True
+            status_check_logger.info(
+                f'Ресурс {source.id} доступен, код ответа - {status_code}.')
         else:
             source.status_check_error += 1
             source.is_available = False
+            status_check_logger.info(
+                f'Ресурс {source.id} недоступен, код ответа - {status_code}.')
 
         async_session = AsyncSessionLocal()
         async with async_session as session:
-            print(source.status_check_error)
-            print(keep_unavailable)
             if source.status_check_error > keep_unavailable:
-                print(source.status_check_error)
-                print(keep_unavailable)
                 session.delete(source)
                 await session.commit()
                 status_check_logger.info(
@@ -68,13 +68,17 @@ async def create_tasks():
 
     tasks = [asyncio.ensure_future(
                 check_source_status(source)) for source in sources]
-    await asyncio.wait(tasks)
+    if tasks:
+        await asyncio.wait(tasks)
 
 
 async def schedule_monitoring():
     while True:
+        status_check_logger.info('Запуск нового цикла мониторинга.')
         await create_tasks()
-        await asyncio.sleep(60)  # Пауза в 1 час
+
+        status_check_logger.info(f'Пауза в мониторинге {check_period} секунд.')
+        await asyncio.sleep(check_period)  # Пауза в N секунд
 
 
 def start_async_monitoring():

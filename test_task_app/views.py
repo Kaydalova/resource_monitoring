@@ -4,23 +4,22 @@ from multiprocessing import Process
 
 from flask import flash, redirect, render_template, request, send_file, url_for
 from fpdf import FPDF
+from settings import logs_per_page, news_per_page
 
 from . import app, db
 from .async_services import start_async
-from .constants import (COMPLETED_SAVING_PROCESS, DATE_CLEARED,
+from .constants import (ADD_SOURCES, COMPLETED_SAVING_PROCESS, DATE_CLEARED,
                         DATE_FROM_REQUIRED, DATE_TO_REQUIRED, DATETIME_PATTERN,
-                        DOWNLOAD_LOGS_PDF, INVALID_DATE_FORMAT,
+                        DELETE_SOURCE, DOWNLOAD_LOGS_PDF, INVALID_DATE_FORMAT,
                         INVALID_FILE_EXTENTION, INVALID_URL,
-                        NEW_SOURCE_CREATED, SHOW_ALL_SOURCES, SHOW_LOGS,
-                        SHOW_NEWS, SHOW_SOURCE_PAGE, SOURCE_DELETED,
+                        NEW_SOURCE_CREATED, NEW_SOURCE_SAVED, SHOW_ALL_SOURCES,
+                        SHOW_LOGS, SHOW_NEWS, SHOW_SOURCE_PAGE, SOURCE_DELETED,
                         STARTED_SAVING_PROCESS, ZIP_EMPTY, ZIP_REQUIRED)
 from .logging_config import all_actions_logger, status_check_logger
 from .models import Source
-from .monitoring import start_async_monitoring
 from .services import (check_file_extension, check_source_with_pattern,
                        check_urls_in_csv, create_new_source,
                        unzip_the_zip_and_save)
-from settings import news_per_page, logs_per_page
 
 
 @app.route('/add_source', methods=['GET', 'POST'])
@@ -29,6 +28,7 @@ def create_source_view():
     Функция для добавления  в приложение новых веб-ресурсов.
     Формы добавляют веб-ресурсы как поштучно, так и загрузкой файла.
     """
+    all_actions_logger.info(ADD_SOURCES)
     if request.method == 'POST' and request.files:
 
         # проверка формата архива
@@ -74,6 +74,8 @@ def create_source_view():
                 all_actions_logger.info(INVALID_URL)
                 flash(INVALID_URL)
             else:
+                status_check_logger.info(
+                    NEW_SOURCE_SAVED.format(new_source.domain, new_source.id))
                 all_actions_logger.info(NEW_SOURCE_CREATED)
                 flash(NEW_SOURCE_CREATED)
     return render_template('create_source.html')
@@ -89,8 +91,8 @@ def get_sources_view():
     а также удаление конкретного элемента
     из таблицы и базы данных соответственно.
     """
-    clear = request.args.get('clear', '')
     all_actions_logger.info(SHOW_ALL_SOURCES)
+    clear = request.args.get('clear', '')
     domain = request.args.get('domain', '')
     domain_zone = request.args.get('domain_zone', '')
     is_available = request.args.get('is_available', '')
@@ -120,9 +122,11 @@ def delete_source_view(source_id):
     """
     Функция удаления ресурса по id.
     """
+    all_actions_logger.info(DELETE_SOURCE)
     source = Source.query.get_or_404(source_id)
     db.session.delete(source)
     db.session.commit()
+    all_actions_logger.info(SOURCE_DELETED.format(source_id))
     status_check_logger.info(SOURCE_DELETED.format(source_id))
     return redirect(url_for('get_sources_view'))
 
@@ -140,11 +144,10 @@ def get_logs_view():
     log_file = 'logs/all_actions.log'
 
     page = request.args.get('page', 1, type=int)
-    
-    
+
     with open(log_file, 'r') as file:
-        logs = file.readlines()
-    
+        logs = file.readlines()[::-1]
+
     page_start = (page-1) * logs_per_page
     page_end = page_start + logs_per_page
     logs_with_pagination = logs[page_start:page_end]
@@ -154,7 +157,7 @@ def get_logs_view():
         'logs.html',
         logs=logs_with_pagination,
         current_page=page,
-        total=total )
+        total=total)
 
 
 @app.route('/download_logs')
@@ -186,17 +189,17 @@ def news_view():
     - ресурс был добавлен в базу
     - ресурс был удален из базы
     """
+    all_actions_logger.info(SHOW_NEWS)
+
     date_from = request.args.get('date_from')
     date_to = request.args.get('date_to')
     clear = request.args.get('clear')
     page = request.args.get('page', 1, type=int)
-    all_actions_logger.info(SHOW_NEWS)
-
     log_file = 'logs/status_check.log'
     per_page = news_per_page
 
     with open(log_file, 'r') as file:
-        news = file.readlines()
+        news = file.readlines()[::-1]
 
     page_start = (page-1) * per_page
     page_end = page_start + per_page
@@ -292,16 +295,3 @@ def source_view(source_id):
         news=source_news,
         source=source,
         screenshot=file_new)
-
-
-@app.route('/start_monitoring', methods=['GET'])
-def start_monitoring():
-    """
-    Функция запускает мониторинг доступности сохраненных ресурсов.
-    """
-    monitoring_process = Process(
-        target=start_async_monitoring)
-    monitoring_process.start()
-    all_actions_logger.info('Запуск процесса мониторинга')
-    flash('Процесс мониторинга доступности запущен')
-    return redirect(url_for('get_sources_view'))
