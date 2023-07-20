@@ -11,7 +11,7 @@ database:
 
 monitoring:
   check_period: 60
-  keep_unavailable: 24
+  keep_unavailable: 5
 
 api_views:
   logs_limit_config: 50

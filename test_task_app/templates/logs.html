@@ -47,15 +47,27 @@
 
     <!-- Пагинация -->
     <div>
-      {% if current_page > 3 %}
+      {% if current_page > 3%}
       <a class="btn btn-primary mb-4"
-      href="{{ url_for('get_logs_view', page=1) }}">{{ 1 }}</a>...
+      href="{{ url_for('get_logs_view', page=1) }}">{{ 1 }}</a>
+      {% endif %}
+
+      {% if current_page > 4%}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=2) }}">{{ 2 }}</a>...
+      {% endif %}
+
+      {% if current_page == 3 %}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=1) }}">{{ 1 }}</a>
       {% endif %}
 
       {% if current_page > 1 and total > current_page+2 %}
       <a class="btn btn-primary mb-4"
       href="{{ url_for('get_logs_view', page=current_page-1) }}">{{ current_page-1 }}</a>
       {% endif %}
+
+
       {% if total > current_page+2 %}
       <a class="btn btn-primary mb-4"
       href="{{ url_for('get_logs_view', page=current_page) }}">{{ current_page }}</a>
@@ -64,7 +76,7 @@
       ...
       {% endif %}
       
-      
+
       {% if current_page+2 == total%}
       <a class="btn btn-primary mb-4"
       href="{{ url_for('get_logs_view', page=current_page) }}">{{ current_page }}</a>
@@ -72,15 +84,25 @@
       href="{{ url_for('get_logs_view', page=total-1) }}">{{ total-1 }}</a>
       <a class="btn btn-primary mb-4"
       href="{{ url_for('get_logs_view', page=total) }}">{{ total }}</a>
+      {% endif %}
       
-    {% else %}
-    <a class="btn btn-primary mb-4"
-    href="{{ url_for('get_logs_view', page=total-1) }}">{{ total-1 }}</a>
+      {% if current_page+2 > total and total > 1 or total> current_page+2 and total>1%}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=total-1) }}">{{ total-1 }}</a>
 
-    <a class="btn btn-primary mb-4"
+      <a class="btn btn-primary mb-4"
       href="{{ url_for('get_logs_view', page=total) }}">{{ total }}</a>
-    {% endif %} 
+      {% endif %}
+
+    
+      {% if total == 1%}
+      <a class="btn btn-primary mb-4"
+      href="{{ url_for('get_logs_view', page=1) }}">{{ 1 }}</a>
+      {% endif %}
+
     </div>
+
+ 
 
   </section>
 </main>

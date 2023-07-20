@@ -2,7 +2,7 @@ import math
 import re
 from multiprocessing import Process
 
-from flask import flash, redirect, render_template, request, send_file, url_for
+from flask import flash, redirect, render_template, request, send_file, url_for, session
 from fpdf import FPDF
 from settings import logs_per_page, news_per_page
 
@@ -29,7 +29,13 @@ def create_source_view():
     Формы добавляют веб-ресурсы как поштучно, так и загрузкой файла.
     """
     all_actions_logger.info(ADD_SOURCES)
-    if request.method == 'POST' and request.files:
+
+    # проверка, что есть либо файл, либо ресурс:
+    if request.method == 'POST' and not request.files.get('file') and not request.form.get('url'):
+        flash('Выберите файл и вставьте ссылку на ресурс.')
+        return render_template('create_source.html')
+
+    if request.method == 'POST' and request.files.get('file'):
 
         # проверка формата архива
         if not check_file_extension(request.files['file'].filename, 'zip'):
@@ -208,6 +214,9 @@ def news_view():
 
     if clear:
         flash(DATE_CLEARED)
+        session.pop('date_from', None)
+        session.pop('date_to', None)
+
         return render_template(
             'news.html',
             news=news_with_pagination,
@@ -239,6 +248,11 @@ def news_view():
                 news=news_with_pagination,
                 current_page=page, total=total)
 
+        # Если даты указаны сохраняем их в сессии, чтобы был доступ к ним
+        # При переключении между страницами
+        session['date_from'] = date_from
+        session['date_to'] = date_to
+
         date_news = []
         for element in news:
             if date_from <= element.split(']')[0][1:20] <= date_to:
@@ -248,12 +262,31 @@ def news_view():
         page_end = page_start + per_page
         news_with_pagination = date_news[page_start:page_end]
         total = math.ceil(len(date_news)/per_page)
-
         return render_template(
             'news.html',
             news=news_with_pagination,
             current_page=page,
             total=total)
+    
+    # Если даты есть в сессии
+    if session.get('date_from') and session.get('date_to'):
+        date_from = session['date_from']
+        date_to = session['date_to']
+        date_news = []
+        for element in news:
+            if date_from <= element.split(']')[0][1:20] <= date_to:
+                date_news.append(element)
+
+        page_start = (page-1) * per_page
+        page_end = page_start + per_page
+        news_with_pagination = date_news[page_start:page_end]
+        total = math.ceil(len(date_news)/per_page)
+        return render_template(
+            'news.html',
+            news=news_with_pagination,
+            current_page=page,
+            total=total)
+
     return render_template(
         'news.html',
         news=news_with_pagination,

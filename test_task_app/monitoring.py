@@ -27,6 +27,12 @@ async def check_source_status(source):
         except asyncio.exceptions.TimeoutError:
             status_check_logger.info(f'Таймаут для ресурса {source.id}.')
             status_code = 0
+        except aiohttp.client_exceptions.ClientConnectorError:
+            status_check_logger.info(
+                f'Не получилось связаться с {source.id}, возможно {source.domain} не существует.')
+            status_code = 0
+        except Exception as ex:
+            status_check_logger.info(f'Ошибка при запросе к {source.id} - {ex}.')
 
         if status_code == 200:
             source.status_check_error = 0
@@ -42,7 +48,7 @@ async def check_source_status(source):
         async_session = AsyncSessionLocal()
         async with async_session as session:
             if source.status_check_error > keep_unavailable:
-                session.delete(source)
+                await session.delete(source)
                 await session.commit()
                 status_check_logger.info(
                     UNAVAILIBLE_SOURCE_DELETED.format(
