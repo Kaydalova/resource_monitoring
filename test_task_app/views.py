@@ -17,12 +17,13 @@ from .constants import (ADD_SOURCES, COMPLETED_SAVING_PROCESS, DATE_CLEARED,
                         INVALID_FILE_EXTENTION, INVALID_URL,
                         NEW_SOURCE_CREATED, NEW_SOURCE_SAVED, SHOW_ALL_SOURCES,
                         SHOW_LOGS, SHOW_NEWS, SHOW_SOURCE_PAGE, SOURCE_DELETED,
-                        STARTED_SAVING_PROCESS, ZIP_EMPTY, ZIP_REQUIRED)
+                        STARTED_SAVING_PROCESS, ZIP_EMPTY, ZIP_REQUIRED,
+                        UUID_PATTERN, INVALID_UUID)
 from .logging_config import all_actions_logger, status_check_logger
 from .models import Source
 from .services import (check_file_extension, check_source_with_pattern,
                        check_urls_in_csv, create_new_source,
-                       unzip_the_zip_and_save)
+                       unzip_the_zip_and_save, date_news_with_id)
 
 
 @app.route('/add_source', methods=['GET', 'POST'])
@@ -79,6 +80,10 @@ def create_source_view():
         if not pattern_match:
             all_actions_logger.info(INVALID_URL)
             flash(INVALID_URL)
+        if Source.query.filter(Source.full_link == request.form.get('url')).first():
+            flash('Такой адрес уже есть в базе.')
+            return render_template('create_source.html')
+
         else:
             new_source = create_new_source(pattern_match, url)
             if not new_source:
@@ -210,6 +215,7 @@ def news_view():
     date_from = request.args.get('date_from')
     date_to = request.args.get('date_to')
     clear = request.args.get('clear')
+    source_id = request.args.get('source_id')
     page = request.args.get('page', 1, type=int)
     log_file = 'logs/status_check.log'
     per_page = news_per_page
@@ -226,6 +232,7 @@ def news_view():
         flash(DATE_CLEARED)
         session.pop('date_from', None)
         session.pop('date_to', None)
+        session.pop('source_id', None)
 
         return render_template(
             'news.html',
@@ -267,6 +274,10 @@ def news_view():
         for element in news:
             if date_from <= element.split(']')[0][1:20] <= date_to:
                 date_news.append(element)
+        
+        if source_id:
+            session['source_id'] = source_id
+            date_news = date_news_with_id(date_news, source_id)
 
         page_start = (page-1) * per_page
         page_end = page_start + per_page
@@ -287,10 +298,55 @@ def news_view():
             if date_from <= element.split(']')[0][1:20] <= date_to:
                 date_news.append(element)
 
+        if session.get('source_id'):
+            if not re.fullmatch(UUID_PATTERN, source_id):
+                flash(INVALID_UUID)
+                return render_template(
+                    'news.html',
+                    news=news_with_pagination,
+                    current_page=page, total=total)
+
+            source_id = session['source_id']
+            date_news = date_news_with_id(date_news, source_id)
+
         page_start = (page-1) * per_page
         page_end = page_start + per_page
         news_with_pagination = date_news[page_start:page_end]
         total = math.ceil(len(date_news)/per_page)
+        return render_template(
+            'news.html',
+            news=news_with_pagination,
+            current_page=page,
+            total=total)
+    
+    # Если нет дат, но есть id ресурса
+    if source_id :
+        if not re.fullmatch(UUID_PATTERN, source_id):
+            flash(INVALID_UUID)
+            return render_template(
+                'news.html',
+                news=news_with_pagination,
+                current_page=page, total=total)
+        
+        session['source_id'] = source_id
+        source_news = date_news_with_id(news, source_id)
+        page_start = (page-1) * per_page
+        page_end = page_start + per_page
+        news_with_pagination = source_news[page_start:page_end]
+        total = math.ceil(len(source_news)/per_page)
+        return render_template(
+            'news.html',
+            news=news_with_pagination,
+            current_page=page,
+            total=total)
+
+    if session.get('source_id'):
+        source_id = session['source_id'] 
+        source_news = date_news_with_id(news, source_id)
+        page_start = (page-1) * per_page
+        page_end = page_start + per_page
+        news_with_pagination = source_news[page_start:page_end]
+        total = math.ceil(len(source_news)/per_page)
         return render_template(
             'news.html',
             news=news_with_pagination,

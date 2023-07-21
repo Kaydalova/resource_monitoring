@@ -5,10 +5,13 @@ from flask_jwt_extended import (create_access_token, get_jwt_identity,
 from werkzeug.security import generate_password_hash
 
 from . import app, db
-from .constants import (ALL_DATA_REQUIRED, GENERATED_TOKEN, USER_CREATED,
-                        USERNAME_NOT_FOUND, USERNAME_TAKEN, WRONG_PASSWORD)
+from .constants import (ALL_DATA_REQUIRED, GENERATED_TOKEN,
+                        USER_CREATED, USERNAME_NOT_FOUND,
+                        USERNAME_TAKEN, WRONG_PASSWORD,
+                        EMAIL_PATTERN, USERNAME_PATTERN)
 from .logging_config import all_actions_logger
 from .models import User
+import re
 
 
 @app.route('/api/register', methods=['POST'])
@@ -33,6 +36,12 @@ def register_api_view():
     username = data.get('username')
     email = data.get('email')
     password = data.get('password')
+
+    # Проверем, что email и username соответствуют паттерну
+    if not re.fullmatch(
+            EMAIL_PATTERN, email) or not re.fullmatch(USERNAME_PATTERN, username):
+        return jsonify(
+            {'error': 'Прроверьте корректность email или username.'}), 400
 
     new_user = User(
         username=username,

@@ -28,7 +28,12 @@
       <div class="col-4">
         <input type="text" name="date_to" placeholder="Конец периода в формате yyyy-mm-dd HH:mm" class="form-control">
       </div>
+
+      <div class="col-4">
+        <input type="text" name="source_id" placeholder="ID ресурса" class="form-control">
+      </div>
       <div class="col-auto">
+        
         <button type="submit" class="btn btn-primary">Применить фильтр</button>
       </div>
 
@@ -48,7 +53,7 @@
           {% endfor %}
           </ul>
           {% else %}
-          <p>Кажется нет ни одной новости!!</p>
+          <p>Кажется нет ни одной новости!</p>
   
           {% endif %}
       </div>

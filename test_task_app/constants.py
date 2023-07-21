@@ -1,12 +1,10 @@
-# Настройки мониторинга
-KEEP_UNavailable_FOR = 60*60*24   # удалять если ресурс недоступен 24 часа
-CHECK_SOURCE_STATUS_EVERY = 60  # проверять каждые 1200 секунд
-
-
 # регулярные выражения для проверки соответствия
 UUID_PATTERN = r'[\da-z]{8}-[\da-z]{4}-[\da-z]{4}-[\da-z]{4}-[\da-z]{12}'
 URL_PATTERN = r'(?P<protocol>https|http):\/\/(?P<domain>[\.\-\w]+)\.(?P<zone>\w+)\/?(?P<path>[\w\._\-%\/]+)?\??(?P<params>[&=\-\w]+)?'
 DATETIME_PATTERN = r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$'
+EMAIL_PATTERN = r'[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+'
+USERNAME_PATTERN = r'[a-zA-Zа-яёА-ЯЁ0-9]+'
+
 
 
 # информационные сообщения для views
@@ -31,7 +29,7 @@ SOURCE_DELETED = 'Удален ресурс с id {}'
 DATE_FROM_REQUIRED = 'Введите дату начала периода'
 DATE_TO_REQUIRED = 'Введите дату окончания периода'
 INVALID_DATE_FORMAT = 'Неверный формат даты. Введите дату в формате yyyy-mm-dd HH:mm'
-DATE_CLEARED = 'Фильтр по дате очищен'
+DATE_CLEARED = 'Фильтр очищен'
 
 
 # информационные сообщения для логгирования

@@ -97,3 +97,11 @@ def create_new_source(pattern_match, source):
     db.session.refresh(new_source)
 
     return new_source
+
+
+def date_news_with_id(date_news, source_id):
+    date_news_with_id = []
+    for element in date_news:
+        if source_id in element:
+            date_news_with_id.append(element)
+    return date_news_with_id
