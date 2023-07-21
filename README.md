@@ -26,6 +26,7 @@
     "password": "test666"
 }
 ```
+
 Пример ответа:
 ```
 {
@@ -43,10 +44,13 @@
 }
 ```
 Пример ответа:
+
 ```
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4OTk0MzgzMSwianRpIjoiNDU3ZDhkMzMtMmVmOS00NTIzLThkMzQtODk3Y2Q3MTAyNzhhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QiLCJuYmYiOjE2ODk5NDM4MzEsImV4cCI6MTY4OTk0NDczMX0.Az9P0MC072y8LyVNUfrjV_TMSP0t0CQ9krtlHQpVtek"
 }
+
+```
 
 - Эндпоинт '/api/logout' принимает POST запрос, токен и завершает сессию.
 
