@@ -2,8 +2,11 @@ import math
 import re
 from multiprocessing import Process
 
-from flask import flash, redirect, render_template, request, send_file, url_for, session
+from flask import (flash, redirect, render_template, request, send_file,
+                   session, url_for)
+from flask_login import login_required
 from fpdf import FPDF
+
 from settings import logs_per_page, news_per_page
 
 from . import app, db
@@ -23,6 +26,7 @@ from .services import (check_file_extension, check_source_with_pattern,
 
 
 @app.route('/add_source', methods=['GET', 'POST'])
+@login_required
 def create_source_view():
     """
     Функция для добавления  в приложение новых веб-ресурсов.
@@ -31,7 +35,8 @@ def create_source_view():
     all_actions_logger.info(ADD_SOURCES)
 
     # проверка, что есть либо файл, либо ресурс:
-    if request.method == 'POST' and not request.files.get('file') and not request.form.get('url'):
+    if request.method == 'POST' and not request.files.get(
+                'file') and not request.form.get('url'):
         flash('Выберите файл и вставьте ссылку на ресурс.')
         return render_template('create_source.html')
 
@@ -88,6 +93,7 @@ def create_source_view():
 
 
 @app.route('/', methods=['GET'])
+@login_required
 def get_sources_view():
     """
     Функция для отображения таблицы со всеми ссылками из базы данных
@@ -124,6 +130,7 @@ def get_sources_view():
 
 
 @app.route('/source/<string:source_id>/delete')
+@login_required
 def delete_source_view(source_id):
     """
     Функция удаления ресурса по id.
@@ -138,6 +145,7 @@ def delete_source_view(source_id):
 
 
 @app.route('/logs', methods=['GET'])
+@login_required
 def get_logs_view():
     """
     Функция для отображаения строк из лог-файла.
@@ -167,6 +175,7 @@ def get_logs_view():
 
 
 @app.route('/download_logs')
+@login_required
 def download_logs():
     all_actions_logger.info(DOWNLOAD_LOGS_PDF)
     log_file = 'logs/all_actions.log'
@@ -187,6 +196,7 @@ def download_logs():
 
 
 @app.route('/news', methods=['GET'])
+@login_required
 def news_view():
     """
     Функция для отображения ленты новостей.
@@ -267,7 +277,7 @@ def news_view():
             news=news_with_pagination,
             current_page=page,
             total=total)
-    
+
     # Если даты есть в сессии
     if session.get('date_from') and session.get('date_to'):
         date_from = session['date_from']
@@ -294,6 +304,7 @@ def news_view():
 
 
 @app.route('/source/<string:source_id>', methods=['GET'])
+@login_required
 def source_view(source_id):
     """
     Функция для отображения страницы ресурса.

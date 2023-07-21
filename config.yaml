@@ -8,6 +8,10 @@ database:
   password: alex55
   dbname: db
 
+  # port: 5432
+  # username: master_user
+  # password: masterkey
+  # dbname: test_flask_db
 
 monitoring:
   check_period: 60
@@ -16,11 +20,9 @@ monitoring:
 api_views:
   logs_limit_config: 50
 
-
 views:
   news_per_page: 10
   logs_per_page: 10
-
 
 
 

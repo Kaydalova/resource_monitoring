@@ -1,11 +1,12 @@
 import asyncio
 
 import aiohttp
-from settings import (check_period, keep_unavailable, name, password, port,
-                      username)
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+
+from settings import (check_period, keep_unavailable, name, password, port,
+                      username)
 
 from .constants import SOURCE_STATUS_CHANGED, UNAVAILIBLE_SOURCE_DELETED
 from .logging_config import status_check_logger
@@ -32,7 +33,8 @@ async def check_source_status(source):
                 f'Не получилось связаться с {source.id}, возможно {source.domain} не существует.')
             status_code = 0
         except Exception as ex:
-            status_check_logger.info(f'Ошибка при запросе к {source.id} - {ex}.')
+            status_check_logger.info(
+                f'Ошибка при запросе к {source.id} - {ex}.')
 
         if status_code == 200:
             source.status_check_error = 0

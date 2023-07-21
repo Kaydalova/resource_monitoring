@@ -3,6 +3,8 @@ import subprocess
 from multiprocessing import Process
 
 from flask import jsonify, request
+from flask_jwt_extended import jwt_required
+
 from settings import logs_limit_config
 
 from . import app, db
@@ -21,6 +23,7 @@ from .services import (check_file_extension, check_source_with_pattern,
 
 
 @app.route('/api/add_source', methods=['POST'])
+@jwt_required()
 def add_source_api_view():
     """
     Эндроинт принимает на вход ссылку на веб_ресурс
@@ -59,6 +62,7 @@ def add_source_api_view():
 
 
 @app.route('/api/add_sources_zip', methods=['POST'])
+@jwt_required()
 def add_zip_sources_api_view():
     """
     Эндпоинт принимает zip архив с csv файлом с перечнем ссылок.
@@ -109,6 +113,7 @@ def add_zip_sources_api_view():
 
 
 @app.route('/api/add_screenshot', methods=['POST'])
+@jwt_required()
 def add_screenshot_api_view():
     """
     Эндпоинт принимает POST запрос, который содержит
@@ -148,6 +153,7 @@ def add_screenshot_api_view():
 
 
 @app.route('/api/all_sources', methods=['GET'])
+@jwt_required()
 def get_all_sources_api_view():
     """
     Эндпоинт принимает GET запрос и выводит все сохраненные ссылки из БД
@@ -194,6 +200,7 @@ def get_all_sources_api_view():
 
 
 @app.route('/api/logs', methods=['GET'])
+@jwt_required()
 def get_logs_api_view():
     """
     Эндпоинт принимает GET запрос и возвращает

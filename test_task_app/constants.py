@@ -48,3 +48,22 @@ DELETE_SOURCE = 'Новый запрос на удаление ресурса'
 # информационные сообщения для мониторинга
 UNAVAILIBLE_SOURCE_DELETED = 'Ресурс {} недоступен дольше {} проверок и был удален.'
 SOURCE_STATUS_CHANGED = 'Изменился статус доступности ресурса {} с {} на {}.'
+
+
+# информационные сообщения для auth
+ALL_DATA_REQUIRED = 'Для регистрации необходимо указать email, username и пароль'
+USERNAME_TAKEN = 'Пользователь с username {} уже существует'
+USER_CREATED = 'Пользователь {} успешно создан!'
+USERNAME_NOT_FOUND = 'Пользователь {} не найден.'
+WRONG_PASSWORD = 'Неверный пароль для {}.'
+GENERATED_TOKEN = 'Сгенерирован токен для пользователя {}.'
+WRONG_PASSWORD_OR_USERNAME = 'Неверные учетные данные.'
+USER_LOGED_IN = 'Пользователь {} вошел.'
+USER_LOGED_OUT = 'Пользователь {} вышел.'
+
+
+DATA_REQUIRED = 'Обязательное поле'
+PASSWORD_LENGTH = 'Пароль должен быть от 8 до 16 символов'
+WRONG_USERNAME = 'Username должен содержать только буквы и цифры'
+MIN_PASSWORD_LENGTH = 8
+MAX_PASSWORD_LENGTH = 16

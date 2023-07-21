@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %} Авторизация {% endblock %}
+{% block content %}
+<main>
+  <section class="container my-5">
+    <div class="row">
+      <h1>Войти</h1>
+      <div class="col-12 col-lg-7 my-5">
+        <!-- Подключение к форме CSRF-токена -->
+        <form method="POST" novalidate>
+          {{ form.csrf_token }}
+          {{ form.username(class="form-control", placeholder=form.username.label.text) }}
+          <p>
+            {% if form.username.errors %}
+              {% for error in form.username.errors %}
+                <span style="color: red">{{ error }}</span>
+              {% endfor %}
+            {% endif %}
+          </p>
+          {{ form.password(class="form-control", placeholder=form.password.label.text) }}
+          <p>
+            {% if form.password.errors %}
+              {% for error in form.password.errors %}
+                <span style="color: red">{{ error }}</span>
+              {% endfor %}
+            {% endif %}
+          </p>
+          <p>
+	    {{ form.remember.label()}}
+	    {{ form.remember() }}
+	      </p>
+          {{ form.submit(class="btn btn-primary") }}
+        </form>
+        <p class="py-3 mb-3">
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              {% for message in messages %}
+                {{ message }}
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+        </p>
+      </div>
+      <div class="col-12 col-lg-5">
+        <img
+          class="img-fluid mx-auto d-block"
+          src="{{ url_for('static', filename='img/male_sourcer.png') }}"
+          alt=""
+        />
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

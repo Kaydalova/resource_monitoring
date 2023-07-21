@@ -26,6 +26,26 @@
                 Лента новостей
               </a>
             </li>
+            
+            {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout_view') }}">
+                Выйти
+              </a>
+              </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('register_view') }}">
+                Регистрация
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('login_view') }}">
+                Войти
+              </a>
+            </li>
+            {% endif %}
+
           </ul>
         </div>
       </div>

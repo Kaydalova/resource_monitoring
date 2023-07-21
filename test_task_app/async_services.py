@@ -1,9 +1,10 @@
 import asyncio
 
 import aiohttp
-from settings import name, password, port, username
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+
+from settings import name, password, port, username
 
 from .constants import NEW_SOURCE_SAVED, SOURCE_TIMEOUT
 from .logging_config import status_check_logger

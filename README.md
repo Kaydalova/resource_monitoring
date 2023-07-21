@@ -15,6 +15,50 @@
 Проет имеет REST API и веб интерфейсы, снабжен логированием.
 
 #### REST API:
+ Регистрация и получение токена:
+- Эндпоинт '/api/register' принимает POST запрос с указанием username, password, email.
+
+Пример запроса:
+```
+{
+    "username": "test",
+    "email": "test@mail.ru",
+    "password": "test666"
+}
+```
+Пример ответа:
+```
+{
+    "message": "Пользователь test успешно создан!"
+}
+```
+
+- Эндпоинт '/api/login' принимает POST запрос с  указанием username, password. Если данные указаны верно, в ответ придет токен.
+
+Пример запроса:
+```
+{
+    "username": "test",
+    "password": "test666"
+}
+```
+Пример ответа:
+```
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY4OTk0MzgzMSwianRpIjoiNDU3ZDhkMzMtMmVmOS00NTIzLThkMzQtODk3Y2Q3MTAyNzhhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InRlc3QiLCJuYmYiOjE2ODk5NDM4MzEsImV4cCI6MTY4OTk0NDczMX0.Az9P0MC072y8LyVNUfrjV_TMSP0t0CQ9krtlHQpVtek"
+}
+
+- Эндпоинт '/api/logout' принимает POST запрос, токен и завершает сессию.
+
+```
+{
+    "message": "Сессия завершена."
+}
+```
+
+##### Эндпоинты далее доступны при наличии токена. Передавайте токен в формате:
+Authorization: Bearer <access_token>
+
 - Эндпоинт '/api/add_source' принимает ссылку, раскладывает ее на протокол, домен, доменную зону и путь.
 Если в ссылке присутствуют параметры - преобразует их в словарь.
 Возвращает ответ в формате json с разложенными данными и статусом обработки.
@@ -115,6 +159,12 @@ http://127.0.0.1:5000/api/all_sources?page=1&per_page=3&is_available=True&domain
 ```
 
 #### Веб-интерфейс:
+Регистрация и вход:
+- Страница регистрации (http://127.0.0.1:5000/register) содержит формы для регистрации нового пользователя (username, email, пароль)
+- Страница входа в приложение (http://127.0.0.1:5000/login) содержит форму для авторизации пользователя на сайте.
+
+
+##### Страницы далее доступны только авторизованным пользователям.
 - Страница 1 (http://127.0.0.1:5000/add_source) содержит формы для добавления в приложение новых веб-ресурсов.
 Формы добавляют веб-ресурсы как поштучно, так и загрузкой файла. 
 
@@ -171,7 +221,9 @@ sudo docker-compose up
 ```
 sudo docker exec -it test_task_app_1 bash
 export FLASK_APP=test_task_app && export FLASK_DEBUG=1
-flask db init && flask db migrate && flask db upgrade
+flask db init
+flask db migrate
+flask db upgrade
 flask start_monitoring
 ```
 4. После выполнения миграций сайт будет доступен по адресу http://127.0.0.1:5000
@@ -191,8 +243,8 @@ TODO:
 - Перенести все конфигурационные данные в yaml ✔️
 - Поменять awailable на available ✔️
 - Проверить и дополнить логирование ✔️
-- Авторизация и регистрация с токенами
-- Безопасная обработка архива
-- Логирование с буферизацией
+- Авторизация и регистрация с токенами ✔️
 - Лента новостей: фильтр по id
+- При завершении сессии токен отправляется в блоклист
+- Валидация юзернейма, почты для апи
 
